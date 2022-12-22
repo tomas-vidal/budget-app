@@ -1,5 +1,7 @@
 import React, { useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import useLocalStorage from "../hooks/useLocalStorage";
+
 const BudgetContext = React.createContext();
 
 export function useBudgets() {
@@ -7,9 +9,13 @@ export function useBudgets() {
 }
 
 export const BudgetsProvider = ({ children }) => {
-  const [budgets, setBudgets] = useState([]);
-  const [expenses, setExpenses] = useState([]);
+  const [budgets, setBudgets] = useLocalStorage("budgets", [
+    { name: "Uncategorized", id: "Uncategorized", max: 0 },
+  ]);
+  const [expenses, setExpenses] = useLocalStorage("expenses", []);
+  const [budgetIdSelected, setBudgetIdSelected] = useState("Uncategorized");
 
+  const defaultValue = "Uncategorized";
   // { id: ,
   //   name: ,
   //   max: }
@@ -20,9 +26,13 @@ export const BudgetsProvider = ({ children }) => {
   //   descripcion: }
 
   const getBudgetExpenses = (budgetId) => {
-    return expenses.filter((expense) => expense.budgetId === budgetId);
+    try {
+      return expenses.filter((expense) => expense.budgetId === budgetId);
+    } catch {
+      console.error("error");
+    }
   };
-  const addExpenses = (amount, description, budgetId) => {
+  const addExpenses = (description, amount, budgetId) => {
     setExpenses((prevExpenses) => {
       return [...prevExpenses, { description, amount, id: uuidv4(), budgetId }];
     });
@@ -33,11 +43,9 @@ export const BudgetsProvider = ({ children }) => {
     });
   };
   const deleteBudget = (budgetId) => {
-    setBudgets((prevBudgets) => {
-      prevBudgets.filter((budget) => {
-        return budget.id !== budgetId;
-      });
-    });
+    setBudgets((prevBudgets) =>
+      prevBudgets.filter((budget) => budget.id !== budgetId)
+    );
   };
   const deleteExpense = (expenseId) => {
     setExpenses((prevExpenses) => {
@@ -57,6 +65,8 @@ export const BudgetsProvider = ({ children }) => {
         addBudget,
         deleteBudget,
         deleteExpense,
+        budgetIdSelected,
+        setBudgetIdSelected,
       }}
     >
       {children}

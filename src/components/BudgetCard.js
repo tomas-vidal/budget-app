@@ -2,9 +2,25 @@ import React from "react";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import ProgressBar from "react-bootstrap/ProgressBar";
-import { type } from "@testing-library/user-event/dist/type";
+import { useState } from "react";
+import { useBudgets } from "../contexts/BudgetContext";
 
-export default function BudgetCard({ amount, max, name }) {
+export default function BudgetCard({
+  max,
+  name,
+  id,
+  onShowExpensesModal,
+  onShowAllExpenses,
+}) {
+  const [showModal, setShowModal] = useState(false);
+
+  const budgets = useBudgets();
+  let budgetExpensesTotal = budgets.getBudgetExpenses(id);
+
+  const amount = budgetExpensesTotal.reduce((accumulator, object) => {
+    return accumulator + parseInt(object.amount);
+  }, 0);
+
   const getPorcentage = (amount, max) => {
     if ((amount * 100) / max > 75) {
       return "danger";
@@ -44,8 +60,18 @@ export default function BudgetCard({ amount, max, name }) {
           className="my-3"
         />
         <div className="d-flex justify-content-end gap-2">
-          <Button variant="outline-primary">Add Expense</Button>
-          <Button variant="outline-secondary">View Expense</Button>
+          <Button
+            variant="outline-primary"
+            onClick={() => onShowExpensesModal(id)}
+          >
+            Add Expense
+          </Button>
+          <Button
+            variant="outline-secondary"
+            onClick={() => onShowAllExpenses(id)}
+          >
+            View Expense
+          </Button>
         </div>
       </Card.Body>
     </Card>
