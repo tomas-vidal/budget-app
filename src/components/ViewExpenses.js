@@ -15,7 +15,6 @@ export default function ViewExpenses({ show, setShow }) {
     expenses.deleteBudget(currentId);
   };
 
-  console.log(expenses.budgetIdSelected);
   return (
     <Modal show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>
@@ -26,10 +25,18 @@ export default function ViewExpenses({ show, setShow }) {
           {expenses
             .getBudgetExpenses(expenses.budgetIdSelected)
             .map((expense) => {
+              console.log(expense);
               return (
-                <ListGroup.Item className="d-flex justify-content-between">
+                <ListGroup.Item className="d-flex justify-content-between align-items-center">
                   <span className="fw-bold">{expense.description}</span>
                   <span className="ms-auto">${expense.amount}</span>
+                  <Button
+                    className="ms-2"
+                    variant="outline-danger"
+                    onClick={() => expenses.deleteExpense(expense.id)}
+                  >
+                    X
+                  </Button>
                 </ListGroup.Item>
               );
             })}

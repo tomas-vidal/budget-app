@@ -48,11 +48,9 @@ export const BudgetsProvider = ({ children }) => {
     );
   };
   const deleteExpense = (expenseId) => {
-    setExpenses((prevExpenses) => {
-      prevExpenses.filter((expense) => {
-        return expense.id !== expenseId;
-      });
-    });
+    setExpenses((prevExpense) =>
+      prevExpense.filter((expense) => expense.id !== expenseId)
+    );
   };
 
   return (
